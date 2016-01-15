@@ -1,5 +1,6 @@
 package tiles;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -9,12 +10,30 @@ import javax.imageio.ImageIO;
 
 public class CreateTiles
 {
+	
+	public static void main(String... args)
+	{
+		createTiles("bahnspinne.png", 1878, 7319, 6315, 874 );
+	}
 
-    public static void main(String... args)
+	/**
+	 * 
+	 * @param path path to the image file
+	 * @param top top of the content-extent
+	 * @param right right of the content-extent
+	 * @param bottom bottom of the content-extent
+	 * @param left left of the content-extent
+	 */
+    public static void createTiles(String path, int top, int right, int bottom, int left)
     {
+    	if (path == null)
+    	{
+    		return;
+    	}
+    	
         try
         {
-            BufferedImage image = ImageIO.read(new File("20150721_Berlin-Blick_vom_Prenzlauer_Berg_bis_Gropiusstadt_IMG_8868_by_sebaso_pow2.jpg"));
+            BufferedImage image = ImageIO.read(new File(path));
 
             if (image != null)
             {
@@ -55,10 +74,18 @@ public class CreateTiles
                         {
                             for (int j = 0; j < tileCount; j++)
                             {
-                                if (((tileSize * (i + 1)) <= width) && ((tileSize * (j + 1)) <= height))
+                            	int tileLeft = tileSize * i;
+                            	int tileRight = tileSize * (i + 1);
+                            	int tileTop = tileSize * j;
+                            	int tileBottom = tileSize * (j + 1);
+                                if (   // is the tile inside the image
+                                		(tileRight <= width) && (tileBottom <= height) 
+                                		// and at least some content is on the tile
+                                        && ((tileBottom >= top) && (tileTop <= bottom)) 
+                                        && ((tileLeft <= right) && (tileRight >= left))
+                                	)
                                 {
-                                    
-                                    BufferedImage tile = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_INT_RGB);
+                                    BufferedImage tile = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_INT_ARGB);
                                     BufferedImage unscaled = image.getSubimage(tileSize * i, tileSize * j, tileSize, tileSize);
                                     File file = new File(count + "/" + i + "/" + j + ".png");
                                     file.mkdirs();
